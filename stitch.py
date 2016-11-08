@@ -1,7 +1,7 @@
+__author__ = 'Wang Dongxu'
 import numpy as np
 import cv2
 import cv2.cv as cv
-__author__ = 'Wang Dongxu'
 
 l2m = [[ -1.69785456e+03,  -6.11337180e+01,  -7.05433527e+04],
  [  2.50271374e+02,  -7.66438434e+02,  -2.68484830e+06],
@@ -19,19 +19,30 @@ cap_l = cv2.VideoCapture("football_left.mp4")
 cap_m = cv2.VideoCapture("football_mid.mp4")
 cap_r = cv2.VideoCapture("football_right.mp4")
 
-fps = int(round(cap_l.get(cv.CV_CAP_PROP_FPS)))
+fps = 24
 frame_size = [int(cap_l.get(cv.CV_CAP_PROP_FRAME_WIDTH )),int(cap_l.get(cv.CV_CAP_PROP_FRAME_HEIGHT))]
 
 fourcc = int(cap_l.get(cv.CV_CAP_PROP_FOURCC))
 iscolor = int(1)
 count = int(cap_l.get(7))
 
+#print fourcc
 newfoucc = int(cv2.cv.CV_FOURCC('M', 'P', 'E', 'G'))
-videoWriter = cv2.VideoWriter('out2.avi',
+#print fps,frame_size,iscolor
+videoWriter = cv2.VideoWriter('out.avi',
+                              #cv2.cv.CV_FOURCC('M', 'J', 'P', 'G'),
+
                               newfoucc,
+                              #fourcc,
                               fps, (frame_size[0]
                               ,
                                frame_size[1]/2))
+#writer = cv2.VideoWriter("panorama.mp4",
+#                              fourcc,
+#                              fps,
+#                              (frame_size[0]+leftlength,frame_size[1]),
+#                              )
+#print newfoucc
 final_img  =  np.zeros([1080/2,1920,3])
 translated_location = np.zeros([1080/2,1920,2])
 
@@ -64,7 +75,6 @@ for i in range(0,count):
     _, mid_img = cap_m.read()
     mid_img = mid_img[:,3:,:]
     _,right_img = cap_r.read()
-    print i
     for i in range(0,540):
         for j in range(0,1920):
             if j<leftlength*1920/8517+3:
@@ -80,4 +90,6 @@ for i in range(0,count):
 
 
     final_img = final_img .astype('uint8')
+	
+    #cv2.imwrite("final_img.jpg",final_img)
     videoWriter.write(final_img)

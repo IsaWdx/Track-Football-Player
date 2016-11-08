@@ -4,6 +4,7 @@ __author__ = 'Wang Dongxu'
 
 
 def homography(pts, perspectivepts):
+
     line0 = np.array([[pts[0][0],pts[0][1],1,0,0,0,-pts[0][0]*perspectivepts[0][0],-pts[0][1]*perspectivepts[0][0],-perspectivepts[0][0]]])
     line1 = np.array([[0,0,0,pts[0][0],pts[0][1],1,-pts[0][0]*perspectivepts[0][1],-pts[0][1]*perspectivepts[0][1],-perspectivepts[0][1]]])
 
@@ -15,17 +16,19 @@ def homography(pts, perspectivepts):
 
     line6 = np.array([[pts[3][0],pts[3][1],1,0,0,0,-pts[3][0]*perspectivepts[3][0],-pts[3][1]*perspectivepts[3][0],-perspectivepts[3][0]]])
     line7 = np.array([[0,0,0,pts[3][0],pts[3][1],1,-pts[3][0]*perspectivepts[3][1],-pts[3][1]*perspectivepts[3][1],-perspectivepts[3][1]]])
+    if np.array(pts).shape[0]>4:
+        line8 = np.array([[pts[4][0],pts[4][1],1,0,0,0,-pts[4][0]*perspectivepts[4][0],-pts[4][1]*perspectivepts[4][0],-perspectivepts[4][0]]])
+        line9 = np.array([[0,0,0,pts[4][0],pts[4][1],1,-pts[4][0]*perspectivepts[4][1],-pts[4][1]*perspectivepts[4][1],-perspectivepts[4][1]]])
 
-    line8 = np.array([[pts[4][0],pts[4][1],1,0,0,0,-pts[4][0]*perspectivepts[4][0],-pts[4][1]*perspectivepts[4][0],-perspectivepts[4][0]]])
-    line9 = np.array([[0,0,0,pts[4][0],pts[4][1],1,-pts[4][0]*perspectivepts[4][1],-pts[4][1]*perspectivepts[4][1],-perspectivepts[4][1]]])
-
-    line = np.concatenate((line0,line1,line2,line3,line4,line5,line6,line7,line8,line9), axis=0)
+        line = np.concatenate((line0,line1,line2,line3,line4,line5,line6,line7,line8,line9), axis=0)
+    else:
+        line = np.concatenate((line0,line1,line2,line3,line4,line5,line6,line7), axis=0)
     U, s, V = np.linalg.svd(line, full_matrices=False)
 
     min = s[0]
     minnum = 0
-
-    for i in range(0, 9):
+    size = np.array(pts).shape[0]*2-1
+    for i in range(0, size):
         if(s[i]<min):
             min = s[i]
             minnum = i
@@ -73,4 +76,16 @@ mid_pts2 = [[600,1785],
 r2m = homography(right_pts, mid_pts2)
 print r2m
 
+top_pts = [[350,630],#circle up
+             [72,74],#left up corner
+             [72,1186],#right up corner
+             [646,1186],#right door down right
+             [813,74]]#bottom left
 
+side_pts = [[170,891],
+            [123,628],
+            [113,1146],
+            [307,1543],
+            [520,4]]
+s2t = homography(side_pts, top_pts)
+print s2t
